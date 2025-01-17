@@ -5,9 +5,17 @@ import { courseSearchableFields } from "./course.constant";
 import { TCourse } from "./course.interface";
 import { CourseModel } from "./course.model";
 import mongoose from "mongoose";
+import { CategoryModel } from "../category/category.model";
 
 // create a course
 const createCourse = async (payload: TCourse) => {
+  // check if category exists
+  const { category } = payload;
+  const isCategoryExists = await CategoryModel.findById(category);
+  if (!isCategoryExists) {
+    throw new AppError(status.BAD_REQUEST, "Category does not exist");
+  }
+
   const result = await CourseModel.create(payload);
   return result;
 };
@@ -148,7 +156,8 @@ const getCourseWithReviews = async (id: string) => {
 const getBestCourse = async () => {
   const result = await CourseModel.aggregate([
     {
-      $lookup: {  // join reviews collection
+      $lookup: {
+        // join reviews collection
         from: "reviews",
         localField: "_id",
         foreignField: "courseId",
@@ -156,13 +165,15 @@ const getBestCourse = async () => {
       },
     },
     {
-      $addFields: { // add averageRating and reviewCount fields
+      $addFields: {
+        // add averageRating and reviewCount fields
         averageRating: { $round: [{ $avg: "$reviews.rating" }, 2] },
         reviewCount: { $size: "$reviews" },
       },
     },
     {
-      $sort: { // sort by averageRating and reviewCount in descending order
+      $sort: {
+        // sort by averageRating and reviewCount in descending order
         averageRating: -1,
         reviewCount: -1,
       },
@@ -171,7 +182,8 @@ const getBestCourse = async () => {
       $limit: 1, // get the first document
     },
     {
-      $project: { // remove reviews field
+      $project: {
+        // remove reviews field
         reviews: false,
       },
     },
