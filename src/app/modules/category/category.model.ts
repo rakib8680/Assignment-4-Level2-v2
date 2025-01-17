@@ -7,6 +7,8 @@ const categorySchema = new Schema<TCategory>({
     required: [true, "Category name is required"],
     unique: true,
   },
+},{
+  timestamps: true,
 });
 
 export const CategoryModel = model<TCategory>("category", categorySchema);

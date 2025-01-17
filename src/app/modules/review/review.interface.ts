@@ -1,7 +1,7 @@
 import { Types } from "mongoose";
 
 export type TReview = {
-  courseId: Types.ObjectId;
+  course: Types.ObjectId;
   rating: number;
   review: string;
 };
