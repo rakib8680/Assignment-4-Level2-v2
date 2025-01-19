@@ -7,7 +7,11 @@ import { UserModel } from "./user.model";
 const createUser = async (payload:TUser)=>{
     
     const result = await UserModel.create(payload);
-    return result;
+
+    // delete password field from the result
+    const userData = result.toObject();
+    delete userData.password;
+    return userData;
 
 };
 

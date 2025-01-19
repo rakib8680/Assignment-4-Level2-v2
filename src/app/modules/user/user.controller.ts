@@ -13,6 +13,7 @@ const createUser = catchAsync(async (req, res) => {
         success : true,
         statusCode : status.CREATED,
         message : "User registered successfully",
+        data : result
     });
 });
 

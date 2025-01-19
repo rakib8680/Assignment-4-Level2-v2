@@ -19,7 +19,6 @@ const userSchema = new Schema<TUser>(
     },
     password: {
       type: String,
-      required: [true, "Password is required"],
     },
     role: {
       type: String,
@@ -32,13 +31,20 @@ const userSchema = new Schema<TUser>(
   },
   {
     timestamps: true,
-  }
+    versionKey: false,
+  },
+  
 );
 
 // hash the password before saving to DB
 userSchema.pre("save", async function (next) {
   const user = this;
-  user.password = await bcrypt.hash(user?.password, Number(config.bcryptSalt));
+  if (user?.password) {
+    user.password = await bcrypt.hash(
+      user?.password as string,
+      Number(config.bcryptSalt)
+    );
+  }
   next();
 });
 
