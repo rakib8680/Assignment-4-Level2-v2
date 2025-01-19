@@ -17,7 +17,7 @@ const createCourseSchemaValidation = z.object({
     .min(5, { message: "Course title must be at least 5 characters long" })
     .max(100, { message: "Title Cannot be more than 100 characters long" }),
   instructor: z.string(),
-  category: z.string(),
+  category: z.string({message:"Category Id Required"}),
   price: z.number().min(0, { message: "Price cannot be negative" }),
   tags: z.array(tagsSchemaValidation).optional(),
   startDate: z.string(),

@@ -23,7 +23,7 @@ const createCourse = async (payload: TCourse) => {
 // get all courses
 const getAllCourses = async (query: Record<string, unknown>) => {
   const courseQuery = new QueryBuilder(
-    CourseModel.find().populate("categoryId"),
+    CourseModel.find().populate("category"),
     query
   )
     .search(courseSearchableFields)
