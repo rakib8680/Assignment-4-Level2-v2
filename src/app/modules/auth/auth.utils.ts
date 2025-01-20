@@ -1,6 +1,8 @@
 import jwt, { JwtPayload } from "jsonwebtoken";
+import bcrypt from "bcrypt";
 
-const createJwtToken = (
+// create jwt token
+export const createJwtToken = (
   jwtPayload: JwtPayload,
   secret: string,
   expiresIn: string
@@ -8,4 +10,10 @@ const createJwtToken = (
   return jwt.sign(jwtPayload, secret, { expiresIn });
 };
 
-export default createJwtToken;
+// match hashed password
+export const isPasswordMatched = (
+  PlainTextPassword: string,
+  HashedPassword: string
+) => {
+  return bcrypt.compare(PlainTextPassword, HashedPassword);
+};

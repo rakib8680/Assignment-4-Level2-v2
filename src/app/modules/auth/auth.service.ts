@@ -3,8 +3,8 @@ import AppError from "../../errors/AppError";
 import { UserModel } from "../user/user.model";
 import { TUserLogin } from "./auth.interface";
 import bcrypt from "bcrypt";
-import createJwtToken from "./auth.utils";
 import config from "../../config";
+import { createJwtToken, isPasswordMatched } from "./auth.utils";
 
 // login user
 const loginUser = async (payload: TUserLogin) => {
@@ -17,11 +17,7 @@ const loginUser = async (payload: TUserLogin) => {
   }
 
   // check if password is correct
-  const isPasswordMatched = await bcrypt.compare(
-    payload.password,
-    user.password as string
-  );
-  if (!isPasswordMatched) {
+  if (!(await isPasswordMatched(payload.password, user.password as string))) {
     throw new AppError(status.UNAUTHORIZED, "Incorrect password");
   }
 
@@ -45,6 +41,28 @@ const loginUser = async (payload: TUserLogin) => {
     userObject,
     accessToken,
   };
+};
+
+// change password
+const changePassword = async (payload: TUserLogin) => {
+  // check if user exists
+  const user = await UserModel.findOne({ username: payload.username }).select(
+    "_id username email role password"
+  );
+  if (!user) {
+    throw new AppError(status.NOT_FOUND, "User not found");
+  }
+
+  // check if previous password is correct
+   if (!(await isPasswordMatched(payload.password, user.password as string))) {
+    throw new AppError(status.UNAUTHORIZED, "Incorrect password");
+  };
+
+
+  // hash new password
+  // const newHashedPassword = await bcrypt.hash(payload.newPassword,)
+
+
 };
 
 export const authServices = {
