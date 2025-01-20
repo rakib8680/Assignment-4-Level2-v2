@@ -23,8 +23,8 @@ const createUserValidationSchema = z.object({
 
 
 const loginUserValidationSchema = z.object({
-  username : z.string({ message: "Please provide a valid username" }),
-  password : z.string({ message: "Please provide a valid password" })
+  username : z.string({ required_error: "Username is required" }),
+  password : z.string({ required_error: "Password is required"})
 })
 
 
