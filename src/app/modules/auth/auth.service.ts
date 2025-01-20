@@ -5,6 +5,12 @@ import { TUserLogin } from "./auth.interface";
 import bcrypt from "bcrypt";
 import config from "../../config";
 import { createJwtToken, isPasswordMatched } from "./auth.utils";
+import { JwtPayload } from "jsonwebtoken";
+
+type TChangePassPayload = {
+  currentPassword: string;
+  newPassword: string;
+};
 
 // login user
 const loginUser = async (payload: TUserLogin) => {
@@ -43,24 +49,46 @@ const loginUser = async (payload: TUserLogin) => {
   };
 };
 
+
+
+
 // change password
-const changePassword = async (payload: TUserLogin) => {
+const changePassword = async (
+  userData: JwtPayload,
+  payload: TChangePassPayload
+) => {
+
+
   // check if user exists
-  const user = await UserModel.findOne({ username: payload.username }).select(
-    "_id username email role password"
-  );
+  const user = await UserModel.findById(userData._id);
   if (!user) {
     throw new AppError(status.NOT_FOUND, "User not found");
   }
 
-  // check if previous password is correct
-   if (!(await isPasswordMatched(payload.password, user.password as string))) {
+
+
+  // check if current password is correct
+  if (
+    !(await isPasswordMatched(payload.currentPassword, user.password as string))
+  ) {
     throw new AppError(status.UNAUTHORIZED, "Incorrect password");
-  };
+  }
 
 
   // hash new password
-  // const newHashedPassword = await bcrypt.hash(payload.newPassword,)
+  const newHashedPassword = await bcrypt.hash(
+    payload.newPassword,
+    Number(config.bcryptSalt)
+  );
+
+
+  // update the password
+  const updatedUser = await UserModel.findByIdAndUpdate(
+    user._id,
+    {
+      password: newHashedPassword,
+    },
+    { new: true }).select("_id username email role");
 
 
 };
