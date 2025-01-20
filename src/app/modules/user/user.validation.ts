@@ -21,6 +21,15 @@ const createUserValidationSchema = z.object({
   role: z.enum(userRoles as [string, ...string[]]).optional(),
 });
 
+
+const loginUserValidationSchema = z.object({
+  username : z.string({ message: "Please provide a valid username" }),
+  password : z.string({ message: "Please provide a valid password" })
+})
+
+
+
 export const userValidations = {
   createUserValidationSchema,
+  loginUserValidationSchema
 };
