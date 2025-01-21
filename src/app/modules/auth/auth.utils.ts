@@ -10,10 +10,15 @@ export const createJwtToken = (
   return jwt.sign(jwtPayload, secret, { expiresIn });
 };
 
+// verify jwt token
+export const verifyJwtToken = (token:string, secret:string)=> jwt.verify(token, secret);
+
+
+
 // match hashed password
-export const isPasswordMatched = (
-  PlainTextPassword: string,
-  HashedPassword: string
-) => {
-  return bcrypt.compare(PlainTextPassword, HashedPassword);
-};
+// export const isPasswordMatched = (
+//   PlainTextPassword: string,
+//   HashedPassword: string
+// ) => {
+//   return bcrypt.compare(PlainTextPassword, HashedPassword);
+// };
