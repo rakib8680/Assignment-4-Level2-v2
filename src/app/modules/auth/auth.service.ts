@@ -12,17 +12,13 @@ type TChangePassPayload = {
   newPassword: string;
 };
 
-
-
 // login user
 const loginUser = async (payload: TUserLogin) => {
-
   // check if user exists
   const user = await UserModel.isUserExist(payload.username);
   if (!user) {
     throw new AppError(status.NOT_FOUND, "User not found");
-  };
-
+  }
 
   // check if password is correct
   if (
@@ -47,7 +43,7 @@ const loginUser = async (payload: TUserLogin) => {
   );
 
   // remove user password from user object
-  const userObject = user?.toObject();
+  const userObject: any = user?.toObject();
   delete userObject.password;
 
   return {
