@@ -15,57 +15,48 @@ type TChangePassPayload = {
 // login user
 const loginUser = async (payload: TUserLogin) => {
   // check if user exists
-  const user = await UserModel.findOne({ username: payload.username }).select(
-    "_id username email role password"
-  );
-  if (!user) {
+  if (!(await UserModel.isUserExist(payload.username))) {
     throw new AppError(status.NOT_FOUND, "User not found");
   }
+  // console.log(await UserModel.isUserExist(payload.username));
 
   // check if password is correct
   if (!(await isPasswordMatched(payload.password, user.password as string))) {
     throw new AppError(status.UNAUTHORIZED, "Incorrect password");
   }
 
-  // create jwt token
-  const jwtPayload = {
-    _id: user._id,
-    username: user.username,
-    role: user.role,
-  };
-  const accessToken = createJwtToken(
-    jwtPayload,
-    config.jwtSecret as string,
-    config.jwtExpiresIn as string
-  );
+  // // create jwt token
+  // const jwtPayload = {
+  //   _id: user._id,
+  //   username: user.username,
+  //   role: user.role,
+  // };
+  // const accessToken = createJwtToken(
+  //   jwtPayload,
+  //   config.jwtSecret as string,
+  //   config.jwtExpiresIn as string
+  // );
 
-  // remove user password from user object
-  const userObject = user?.toObject();
-  delete userObject.password;
+  // // remove user password from user object
+  // const userObject = user?.toObject();
+  // delete userObject.password;
 
-  return {
-    userObject,
-    accessToken,
-  };
+  // return {
+  //   userObject,
+  //   accessToken,
+  // };
 };
-
-
-
 
 // change password
 const changePassword = async (
   userData: JwtPayload,
   payload: TChangePassPayload
 ) => {
-
-
   // check if user exists
   const user = await UserModel.findById(userData._id);
   if (!user) {
     throw new AppError(status.NOT_FOUND, "User not found");
   }
-
-
 
   // check if current password is correct
   if (
@@ -74,13 +65,11 @@ const changePassword = async (
     throw new AppError(status.UNAUTHORIZED, "Incorrect password");
   }
 
-
   // hash new password
   const newHashedPassword = await bcrypt.hash(
     payload.newPassword,
     Number(config.bcryptSalt)
   );
-
 
   // update the password
   const updatedUser = await UserModel.findByIdAndUpdate(
@@ -88,9 +77,8 @@ const changePassword = async (
     {
       password: newHashedPassword,
     },
-    { new: true }).select("_id username email role");
-
-
+    { new: true }
+  ).select("_id username email role");
 };
 
 export const authServices = {
