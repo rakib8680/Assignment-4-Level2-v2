@@ -11,7 +11,8 @@ export interface TUser{
 
 
 
-// static method to check if user exist by id
+// static methods 
 export interface StaticUserModel extends Model<TUser>{
-    isUserExist (id:string):Promise<TUser> 
-}
+    isUserExist (username:string):Promise<TUser> 
+    isPasswordMatched (plainPassword:string, hashedPassword:string):Promise<boolean>
+};

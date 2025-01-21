@@ -51,6 +51,11 @@ userSchema.pre("save", async function (next) {
 // static method to check if user exist 
 userSchema.statics.isUserExist = async function (username:string){
   return await this.findOne({username});
+};
+
+// static method to check if password matched
+userSchema.statics.isPasswordMatched = async function(plainPassword:string, hashedPassword:string){
+  return await bcrypt.compare(plainPassword, hashedPassword);
 }
 
 
