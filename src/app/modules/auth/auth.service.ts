@@ -4,7 +4,7 @@ import { UserModel } from "../user/user.model";
 import { TUserLogin } from "./auth.interface";
 import bcrypt from "bcrypt";
 import config from "../../config";
-import { createJwtToken} from "./auth.utils";
+import { createJwtToken } from "./auth.utils";
 import { JwtPayload } from "jsonwebtoken";
 
 type TChangePassPayload = {
@@ -52,9 +52,6 @@ const loginUser = async (payload: TUserLogin) => {
   };
 };
 
-
-
-
 // change password
 const changePassword = async (
   userData: JwtPayload,
@@ -73,7 +70,7 @@ const changePassword = async (
       user.password as string
     ))
   ) {
-    throw new AppError(status.UNAUTHORIZED, "Incorrect password");
+    throw new AppError(status.UNAUTHORIZED, "Incorrect current password");
   }
 
   // hash new password
@@ -83,13 +80,15 @@ const changePassword = async (
   );
 
   // update the password
-  // const updatedUser = await UserModel.findByIdAndUpdate(
-  //   user._id,
-  //   {
-  //     password: newHashedPassword,
-  //   },
-  //   { new: true }
-  // ).select("_id username email role");
+  const updatedUser = await UserModel.findOneAndUpdate(
+    { username: userData.username },
+    {
+      password: newHashedPassword,
+    },
+    { new: true }
+  ).select("_id username email role");
+
+  return updatedUser;
 };
 
 export const authServices = {
