@@ -24,7 +24,10 @@ const getAllCourses = catchAsync(async (req, res) => {
     success: true,
     statusCode: status.OK,
     message: "Courses fetched successfully",
-    data: result,
+    meta: result.meta,
+    data: {
+      courses: result.result,
+    },
   });
 });
 
