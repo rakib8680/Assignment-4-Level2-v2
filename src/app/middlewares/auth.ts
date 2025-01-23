@@ -5,6 +5,7 @@ import { verifyJwtToken } from "../modules/auth/auth.utils";
 import config from "../config";
 import { JwtPayload } from "jsonwebtoken";
 import { TUserRoleEnum } from "../modules/user/user.interface";
+import { UserModel } from "../modules/user/user.model";
 
 const auth = (...requiredRoles: TUserRoleEnum[]) => {
   return catchAsync(async (req, res, next) => {
@@ -21,9 +22,15 @@ const auth = (...requiredRoles: TUserRoleEnum[]) => {
     } catch (error) {
       throw new AppError(status.UNAUTHORIZED, "Unauthorize access");
     }
-    console.log(decodedData);
 
-    const role = (decodedData as JwtPayload)?.role;
+    const { role, username } = decodedData as JwtPayload;
+
+    // check if user exist
+    if (username && !(await UserModel.isUserExist(username))) {
+      throw new AppError(status.NOT_FOUND, "User does not exist");
+    }
+
+    // check if user has the required role
     if (requiredRoles && !requiredRoles.includes(role)) {
       throw new AppError(
         status.FORBIDDEN,

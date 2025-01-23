@@ -18,7 +18,7 @@ const userSchema = new Schema<TUser, StaticUserModel>(
       required: [true, "Email is required"],
     },
     password: {
-      type: String,
+      type: String
     },
     role: {
       type: String,

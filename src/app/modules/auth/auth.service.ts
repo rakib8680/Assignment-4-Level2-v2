@@ -63,7 +63,7 @@ const changePassword = async (
     throw new AppError(status.NOT_FOUND, "User not found");
   }
 
-  // check if password is correct
+  // check if current password is correct
   if (
     !(await UserModel.isPasswordMatched(
       payload.currentPassword,
@@ -71,6 +71,14 @@ const changePassword = async (
     ))
   ) {
     throw new AppError(status.UNAUTHORIZED, "Incorrect current password");
+  }
+
+  // check if new password is the same as the current password
+  if (payload.currentPassword === payload.newPassword) {
+    throw new AppError(
+      status.BAD_REQUEST,
+      "New password cannot be the same as the current password"
+    );
   }
 
   // hash new password
