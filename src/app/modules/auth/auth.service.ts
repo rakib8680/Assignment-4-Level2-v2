@@ -92,6 +92,7 @@ const changePassword = async (
     { username: userData.username },
     {
       password: newHashedPassword,
+      passwordChangedAt: new Date()
     },
     { new: true }
   ).select("_id username email role");

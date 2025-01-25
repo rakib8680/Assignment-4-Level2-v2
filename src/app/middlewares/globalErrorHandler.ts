@@ -14,7 +14,6 @@ const globalErrorHandler: ErrorRequestHandler = (err, req, res, next) => {
     message: "Error",
     errorMessage: "Something Went Wrong",
   };
-
   console.log(err.name);
 
   // check error type and set customized error message
@@ -26,15 +25,17 @@ const globalErrorHandler: ErrorRequestHandler = (err, req, res, next) => {
     errorResponse = handleCastError(err);
   } else if (err.code === 11000) {
     errorResponse = handleDuplicateKeyError(err);
-  } else if (err instanceof JsonWebTokenError) {
-    errorResponse = {
-      success: false,
-      message: "Unauthorized Access",
-      errorMessage: `${err.name === "TokenExpiredError" ? "Session Expired, please login again to access this route." : "You are not authorized to access this route"}`,
-      errorDetails: "null",
-      stack: "null",
-    };
-  } else if (err instanceof AppError) {
+  }
+  // else if (err instanceof JsonWebTokenError) {
+  //   errorResponse = {
+  //     success: false,
+  //     message: "Unauthorized Access",
+  //     errorMessage: `${err.name === "TokenExpiredError" ? "Session Expired, please login again to access this route." : "You don't have necessary permission to access this route."}`,
+  //     errorDetails: "null",
+  //     stack: "null",
+  //   };
+  // }
+  else if (err instanceof AppError) {
     errorResponse = {
       success: false,
       message: err.message,
