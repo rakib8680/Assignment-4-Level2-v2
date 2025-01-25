@@ -16,12 +16,12 @@ const auth = (...requiredRoles: TUserRoleEnum[]) => {
     }
 
     // verify token
-    let decodedData;
-    try {
-      decodedData = verifyJwtToken(token, config.jwtSecret as string);
-    } catch (error) {
-      throw new AppError(status.UNAUTHORIZED, "Unauthorize access");
-    }
+    // let decodedData;
+    // try {
+    // } catch (error) {
+    //   throw new AppError(status.UNAUTHORIZED, "Unauthorize access");
+    // }
+    const decodedData = verifyJwtToken(token, config.jwtSecret as string);
 
     const { role, username } = decodedData as JwtPayload;
 
