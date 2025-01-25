@@ -14,7 +14,7 @@ const globalErrorHandler: ErrorRequestHandler = (err, req, res, next) => {
     message: "Error",
     errorMessage: "Something Went Wrong",
   };
-  console.log(err.name);
+  // console.log(err.name);
 
   // check error type and set customized error message
   if (err instanceof ZodError) {

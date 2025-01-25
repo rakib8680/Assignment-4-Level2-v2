@@ -11,9 +11,16 @@ export const createJwtToken = (
 };
 
 // verify jwt token
-export const verifyJwtToken = (token:string, secret:string)=> jwt.verify(token, secret);
+export const verifyJwtToken = (token: string, secret: string) =>
+  jwt.verify(token, secret);
 
-
+// check if password has been changed after token was issued
+export const isJwtIssuedBeforePasswordChange = (
+  passwordChangedAt: Date,
+  iat: number
+): boolean => {
+  return new Date(passwordChangedAt).getTime() / 1000 > iat;
+};
 
 // match hashed password
 // export const isPasswordMatched = (

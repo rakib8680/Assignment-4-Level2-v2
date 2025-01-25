@@ -1,7 +1,10 @@
 import status from "http-status";
 import AppError from "../errors/AppError";
 import catchAsync from "../utils/catchAsync";
-import { verifyJwtToken } from "../modules/auth/auth.utils";
+import {
+  isJwtIssuedBeforePasswordChange,
+  verifyJwtToken,
+} from "../modules/auth/auth.utils";
 import config from "../config";
 import { JwtPayload } from "jsonwebtoken";
 import { TUserRoleEnum } from "../modules/user/user.interface";
@@ -24,11 +27,22 @@ const auth = (...requiredRoles: TUserRoleEnum[]) => {
     }
     // const decodedData = verifyJwtToken(token, config.jwtSecret as string);
 
-    const { role, username } = decodedData as JwtPayload;
+    const { role, username, iat } = decodedData as JwtPayload;
 
     // check if user exist
-    if (username && !(await UserModel.isUserExist(username))) {
+    const user = username && (await UserModel.isUserExist(username));
+    if (!user) {
       throw new AppError(status.NOT_FOUND, "User does not exist");
+    }
+
+    // check if password has been changed after token was issued
+    if (
+      isJwtIssuedBeforePasswordChange(user.passwordChangedAt, iat as number)
+    ) {
+      throw new AppError(
+        status.UNAUTHORIZED,
+        "Password has been changed recently, please login again"
+      );
     }
 
     // check if user has the required role
