@@ -7,10 +7,21 @@ import { CourseModel } from "../course/course.model";
 
 // create review
 const createReview = async (payload: TReview, creator: JwtPayload) => {
+  
+  // check if course exist
+  if (!(await CourseModel.findById(payload.course)))
+    throw new AppError(status.NOT_FOUND, "Course doesn't exist");
 
-  // check if course exist 
-  const course = await CourseModel.findById(payload.course);
-  if (!course) throw new AppError(status.NOT_FOUND, "Course doesn't exist");
+  // check if user has already reviewed the course
+  const review = await ReviewModel.findOne({
+    createdBy: creator._id,
+    course: payload.course,
+  });
+  if (review)
+    throw new AppError(
+      status.BAD_REQUEST,
+      "You have already reviewed this course"
+    );
 
   // add creator id to payload
   payload.createdBy = creator._id;
