@@ -22,4 +22,5 @@ export type TCourse = {
     level: TLevel;
     description: string;
   };
+  createdBy : Types.ObjectId;
 };

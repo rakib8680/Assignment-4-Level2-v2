@@ -6,7 +6,7 @@ import sendResponse from "../../utils/sendResponse";
 // create a course
 const createCourse = catchAsync(async (req, res) => {
   const courseData = req.body;
-  const result = await CourseServices.createCourse(courseData);
+  const result = await CourseServices.createCourse(courseData, req.user);
 
   sendResponse(res, {
     success: true,

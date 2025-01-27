@@ -58,6 +58,10 @@ const courseSchema = new Schema<TCourse>(
       },
       description: String,
     },
+    createdBy: {
+      type: Schema.Types.ObjectId,
+      ref: "user",
+    },
   },
   {
     timestamps: true,

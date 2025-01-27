@@ -6,6 +6,7 @@ export type TUserRoleEnum = keyof typeof USER_ROLE_ENUM;
 
 export interface TUser {
   toObject(): unknown;
+  _id?: string;
   username: string;
   email: string;
   password?: string;

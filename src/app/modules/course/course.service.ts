@@ -6,15 +6,19 @@ import { TCourse } from "./course.interface";
 import { CourseModel } from "./course.model";
 import mongoose from "mongoose";
 import { CategoryModel } from "../category/category.model";
+import { JwtPayload } from "jsonwebtoken";
 
 // create a course
-const createCourse = async (payload: TCourse) => {
+const createCourse = async (payload: TCourse, creator: JwtPayload) => {
   // check if category exists
   const { category } = payload;
   const isCategoryExists = await CategoryModel.findById(category);
   if (!isCategoryExists) {
     throw new AppError(status.BAD_REQUEST, "Category does not exist");
   }
+
+  // add createdBy field to the payload
+  payload.createdBy = creator._id;
 
   const result = await CourseModel.create(payload);
   return result;

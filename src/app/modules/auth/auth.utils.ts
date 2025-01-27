@@ -1,5 +1,4 @@
 import jwt, { JwtPayload } from "jsonwebtoken";
-import bcrypt from "bcrypt";
 
 // create jwt token
 export const createJwtToken = (
