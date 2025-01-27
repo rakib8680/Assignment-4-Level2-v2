@@ -1,11 +1,12 @@
 import catchAsync from "../../utils/catchAsync";
+import sendResponse from "../../utils/sendResponse";
 import { CategoryService } from "./category.service";
 
 // create category
 const createCategory = catchAsync(async (req, res) => {
   const categoryData = req.body;
-  const result = await CategoryService.createCategory(categoryData);
-  res.status(201).json({
+  const result = await CategoryService.createCategory(categoryData, req.user);
+  sendResponse(res, {
     success: true,
     statusCode: 201,
     message: "Category created successfully",
@@ -16,10 +17,10 @@ const createCategory = catchAsync(async (req, res) => {
 // get all categories
 const getAllCategories = catchAsync(async (req, res) => {
   const result = await CategoryService.getAllCategories();
-  res.status(200).json({
+  sendResponse(res, {
     success: true,
     statusCode: 200,
-    message: "All categories fetched successfully",
+    message: "Categories fetched successfully",
     data: result,
   });
 });
