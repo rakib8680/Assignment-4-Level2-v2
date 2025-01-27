@@ -27,7 +27,10 @@ const createCourse = async (payload: TCourse, creator: JwtPayload) => {
 // get all courses
 const getAllCourses = async (query: Record<string, unknown>) => {
   const courseQuery = new QueryBuilder(
-    CourseModel.find().populate("category"),
+    CourseModel.find().populate("category").populate({
+      path: "createdBy",
+      select: "_id username email role",
+    }),
     query
   )
     .search(courseSearchableFields)
