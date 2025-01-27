@@ -13,6 +13,7 @@ const categorySchema = new Schema<TCategory>({
   },
 },{
   timestamps: true,
+  versionKey: false,
 });
 
 export const CategoryModel = model<TCategory>("category", categorySchema);

@@ -51,6 +51,11 @@ const getAllCourses = async (query: Record<string, unknown>) => {
 
 // update course
 const updateCourse = async (id: string, payload: Partial<TCourse>) => {
+  // check if course exists
+  if (!(await CourseModel.findById(id))) {
+    throw new AppError(status.NOT_FOUND, "Course does not exist");
+  }
+
   // separate non-primitive fields from payload
   const { tags, details, ...remainingCourseData } = payload;
 
@@ -126,7 +131,10 @@ const updateCourse = async (id: string, payload: Partial<TCourse>) => {
   }
 
   // fetch the updated course
-  const result = await CourseModel.findById(id).populate("categoryId");
+  const result = await CourseModel.findById(id).populate("category").populate({
+    path: "createdBy",
+    select: "_id username email role",
+  });
   return result;
 };
 
