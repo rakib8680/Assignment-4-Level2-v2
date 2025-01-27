@@ -7,7 +7,6 @@ import { CourseModel } from "../course/course.model";
 
 // create review
 const createReview = async (payload: TReview, creator: JwtPayload) => {
-  
   // check if course exist
   if (!(await CourseModel.findById(payload.course)))
     throw new AppError(status.NOT_FOUND, "Course doesn't exist");
@@ -31,7 +30,10 @@ const createReview = async (payload: TReview, creator: JwtPayload) => {
 
 // get all reviews
 const getAllReviews = async () => {
-  const result = await ReviewModel.find();
+  const result = await ReviewModel.find().populate({
+    path: "createdBy",
+    select: "_id username role email",
+  });
   return result;
 };
 
