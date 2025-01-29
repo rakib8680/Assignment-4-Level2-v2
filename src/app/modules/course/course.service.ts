@@ -141,26 +141,89 @@ const updateCourse = async (id: string, payload: Partial<TCourse>) => {
 // get single course with reviews
 const getCourseWithReviews = async (id: string) => {
   const result = await CourseModel.aggregate([
+    // Match the course by its ID
     {
       $match: { _id: new mongoose.Types.ObjectId(id) },
     },
+    // Lookup the user who created the course
+    {
+      $lookup: {
+        from: "users",
+        localField: "createdBy",
+        foreignField: "_id",
+        as: "createdBy",
+      },
+    },
+    // Unwind the createdBy array (since lookup returns an array)
+    {
+      $unwind: "$createdBy",
+    },
+    // Lookup the reviews for the course
     {
       $lookup: {
         from: "reviews",
         localField: "_id",
-        foreignField: "courseId",
+        foreignField: "course",
         as: "reviews",
       },
     },
+    // Unwind the reviews array (since lookup returns an array)
+    {
+      $unwind: "$reviews",
+    },
+    // Lookup the user who created each review
+    {
+      $lookup: {
+        from: "users",
+        localField: "reviews.createdBy",
+        foreignField: "_id",
+        as: "reviews.createdBy",
+      },
+    },
+    // Unwind the reviews.createdBy array (since lookup returns an array)
+    {
+      $unwind: "$reviews.createdBy",
+    },
+    // Group the course and its reviews together
+    {
+      $group: {
+        _id: "$_id",
+        course: {
+          $first: "$$ROOT", // $$ROOT returns the original document
+        },
+        reviews: {
+          $push: {
+            _id: "$reviews._id",
+            rating: "$reviews.rating",
+            review: "$reviews.review",
+            createdBy: "$reviews.createdBy",
+          },
+        },
+      },
+    },
+    // Add the reviews array back to the course document
+    {
+      $addFields: {
+        "course.reviews": "$reviews",
+      },
+    },
+    // Replace the root document with the course document
+    {
+      $replaceRoot: { newRoot: "$course" },
+    },
+    // Project to exclude certain fields from the output
     {
       $project: {
-        _id: 1,
-        title: 1,
-        provider: 1,
-        reviews: {
-          rating: 1,
-          review: 1,
-        },
+        createdAt: 0,
+        updatedAt: 0,
+        __v: 0,
+        "createdBy.password": 0,
+        "createdBy.passwordChangedAt": 0,
+        "createdBy.createdAt": 0,
+        "createdBy.updatedAt": 0,
+        "reviews.createdBy.password": 0,
+        "reviews.createdBy.createdAt": 0,
+        "reviews.createdBy.updatedAt": 0,
       },
     },
   ]);
