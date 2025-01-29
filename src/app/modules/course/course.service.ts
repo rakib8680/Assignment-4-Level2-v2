@@ -238,7 +238,7 @@ const getBestCourse = async () => {
         // join reviews collection
         from: "reviews",
         localField: "_id",
-        foreignField: "courseId",
+        foreignField: "course",
         as: "reviews",
       },
     },
