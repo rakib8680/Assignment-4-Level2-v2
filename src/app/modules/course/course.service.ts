@@ -230,12 +230,12 @@ const getCourseWithReviews = async (id: string) => {
   return result;
 };
 
-// get the best course based on average rating
+// get the best course based on average rating  todo:populate createdBy.............................
 const getBestCourse = async () => {
   const result = await CourseModel.aggregate([
+    // join reviews collection
     {
       $lookup: {
-        // join reviews collection
         from: "reviews",
         localField: "_id",
         foreignField: "course",
@@ -243,15 +243,28 @@ const getBestCourse = async () => {
       },
     },
     {
+      // join users collection
+      $lookup: {
+        from: "users",
+        localField: "createdBy",
+        foreignField: "_id",
+        as: "createdBy",
+      },
+    },
+    {
+      // unwind the createdBy array (since lookup returns an array)
+      $unwind: "$createdBy",
+    },
+    {
+      // add averageRating and reviewCount fields
       $addFields: {
-        // add averageRating and reviewCount fields
         averageRating: { $round: [{ $avg: "$reviews.rating" }, 2] },
         reviewCount: { $size: "$reviews" },
       },
     },
     {
+      // sort by averageRating and reviewCount in descending order
       $sort: {
-        // sort by averageRating and reviewCount in descending order
         averageRating: -1,
         reviewCount: -1,
       },
@@ -263,6 +276,11 @@ const getBestCourse = async () => {
       $project: {
         // remove reviews field
         reviews: false,
+        __v: 0,
+        "createdBy.password": 0,
+        "createdBy.passwordChangedAt": 0,
+        "createdBy.createdAt": 0,
+        "createdBy.updatedAt": 0,
       },
     },
   ]);
