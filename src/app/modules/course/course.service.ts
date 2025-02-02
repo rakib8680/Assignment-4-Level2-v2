@@ -230,7 +230,7 @@ const getCourseWithReviews = async (id: string) => {
   return result;
 };
 
-// get the best course based on average rating  todo:populate createdBy.............................
+// get the best course based on average rating
 const getBestCourse = async () => {
   const result = await CourseModel.aggregate([
     // join reviews collection
