@@ -9,8 +9,6 @@ class QueryBuilder<T> {
     this.query = query;
   }
 
-
-
   // Method to search documents based on a search term in specified fields
   search(searchableFields: string[]) {
     const { searchTerm } = this.query;
@@ -27,8 +25,6 @@ class QueryBuilder<T> {
     return this;
   }
 
-
-
   // Method to filter documents based on query parameters, excluding certain fields
   filter() {
     const queryObj = { ...this.query };
@@ -40,41 +36,45 @@ class QueryBuilder<T> {
       queryObj["tags.name"] = queryObj.tags;
       delete queryObj.tags;
     }
-    const excludeFields = ["searchTerm", "sort","sortOrder" ,"limit", "page", "fields", "minPrice", "maxPrice"];
+    const excludeFields = [
+      "searchTerm",
+      "sort",
+      "sortOrder",
+      "limit",
+      "page",
+      "fields",
+      "minPrice",
+      "maxPrice",
+    ];
     excludeFields.forEach((el) => delete queryObj[el]);
     this.modelQuery = this.modelQuery.find(queryObj as FilterQuery<T>);
     return this;
   }
 
-
   // Method to filter documents, based on price range
   filterPrice() {
     const { minPrice, maxPrice } = this.query;
-    const priceObj :any = {};
-    if(minPrice){
+    const priceObj: any = {};
+    if (minPrice) {
       priceObj.$gte = minPrice;
     }
-    if(maxPrice){
+    if (maxPrice) {
       priceObj.$lte = maxPrice;
     }
-    if(minPrice || maxPrice){
-      this.modelQuery = this.modelQuery.find({price: priceObj});
+    if (minPrice || maxPrice) {
+      this.modelQuery = this.modelQuery.find({ price: priceObj });
     }
-    
+
     return this;
   }
-
-
 
   // Method to sort documents based on a sort parameter or default to '-createdAt'
   sort() {
-   const sort = (this.query.sort as string) || "-createdAt";
-   const sortOrder = this.query.sortOrder === "asc" ? "" : "-";
+    const sort = (this.query.sort as string) || "-createdAt";
+    const sortOrder = this.query.sortOrder === "asc" ? "" : "-";
     this.modelQuery = this.modelQuery.sort(`${sortOrder}${sort}`);
     return this;
   }
-
-
 
   // Method to paginate the results based on page and limit parameters
   paginate() {
@@ -85,8 +85,6 @@ class QueryBuilder<T> {
     return this;
   }
 
-
-
   // Method to select specific fields to be returned in the results
   fields() {
     const fields =
@@ -94,8 +92,6 @@ class QueryBuilder<T> {
     this.modelQuery = this.modelQuery.select(fields);
     return this;
   }
-
-
 
   // Method to count the total number of documents matching the query
   async countTotal() {
