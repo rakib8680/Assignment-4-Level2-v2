@@ -11,7 +11,7 @@ const handleZodError = (err: ZodError): TErrorResponse => {
   return {
     success: false,
     message: "Validation Error",
-    errorMessage: errorMessage,
+    errorMessage,
   };
 };
 
