@@ -43,7 +43,7 @@ userSchema.pre("save", async function (next) {
   const user = this;
   if (user?.password) {
     user.password = await bcrypt.hash(
-      user?.password as string,
+      user?.password,
       Number(config.bcryptSalt)
     );
   }
