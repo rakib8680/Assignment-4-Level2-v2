@@ -7,7 +7,7 @@ export interface TUser {
   _id?: string;
   username: string;
   email: string;
-  password?: string;
+  password: string;
   passwordChangedAt?: Date;
   role?: TUserRole;
 }

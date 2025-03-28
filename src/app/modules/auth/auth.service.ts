@@ -24,7 +24,7 @@ const loginUser = async (payload: TUserLogin) => {
   if (
     !(await UserModel.isPasswordMatched(
       payload.password,
-      user.password as string
+      user.password
     ))
   ) {
     throw new AppError(status.UNAUTHORIZED, "Incorrect password");
